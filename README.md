@@ -1,7 +1,7 @@
 # AmuletScripts
 Small utility scripts for editing minecraft worlds using https://github.com/Amulet-Team/Amulet-Core.
 
-Tested with Python 3.8, Minecraft 1.17. Should work with any Python 3 and any version of Minecraft supported by amulet (currently 1.12-1.17).
+Tested with Python 3.9, Minecraft 1.18. Should work with any Python 3 and any version of Minecraft supported by amulet (currently 1.12-1.18).
 
 _**Please, create backups of your worlds before running external tools to modify them.**_
 
