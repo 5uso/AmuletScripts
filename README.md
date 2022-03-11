@@ -11,3 +11,10 @@ Sets the `Delay` tag of all of the mob spawners in a given world to `0s`.
 Usage: `python SpawnerPrimer.py <world>`
 
 Dependencies: `pip install amulet-map-editor` `pip install tqdm`
+
+## Cartographer Updater
+Updates enchantments and mob ability tags from old [cartographer](https://github.com/pearuhdox/Cartographer) versions.
+
+Usage: `python CartoUpdater.py <world>`
+
+Dependencies: `pip install amulet-map-editor` `pip install tqdm`
