@@ -154,14 +154,14 @@ def handle_container(chunk, container):
                 item_changed = True
                 chunk.changed = True
             except KeyError: pass
-            if item_changed:
-                try:
-                    for i in range(len(item['tag']['display']['Lore'])):
-                        s = str(item['tag']['display']['Lore'][i])
-                        for o, r in CARTO_LORES.items(): s = s.replace(o, r)
-                        if "\"Volatile " in s: s = "{\"italic\":false,\"color\":\"gray\",\"text\":\"Explosive\"}"
-                        item['tag']['display']['Lore'][i] = amulet_nbt.TAG_String(s)
-                except KeyError: pass
+        if item_changed:
+            try:
+                for i in range(len(item['tag']['display']['Lore'])):
+                    s = str(item['tag']['display']['Lore'][i])
+                    for o, r in CARTO_LORES.items(): s = s.replace(o, r)
+                    if "\"Volatile " in s: s = "{\"italic\":false,\"color\":\"gray\",\"text\":\"Explosive\"}"
+                    item['tag']['display']['Lore'][i] = amulet_nbt.TAG_String(s)
+            except KeyError: pass
 
 def handle_mob(chunk, mob):
     try:
