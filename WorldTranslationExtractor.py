@@ -2,7 +2,7 @@ import amulet, sys, re, os
 import amulet_nbt as n
 from tqdm import tqdm
 
-OLD_SPAWNER_FORMAT = True # If this is false, uses 1.18+ nbt paths for spawners
+OLD_SPAWNER_FORMAT = False
 
 REG = re.compile(r'"text" *: *"((?:[^"\\]|\\\\"|\\.)*)"')
 REG2 = re.compile(r'\\"text\\" *: *\\"((?:[^"\\]|\\\\.)*)\\"')
@@ -324,7 +324,7 @@ def gen_lang(path):
 def main():
     print("\nWorld Translation Extractor, by Suso. Using amulet core.\n")
 
-    if len(sys.argv) != 2:
+    if len(sys.argv) < 2:
         print("Usage: python {} <world>".format(sys.argv[0]))
         exit(0)
 
@@ -336,6 +336,10 @@ def main():
     print("\nScanning chunks...")
     try:
         level = amulet.load_level(sys.argv[1])
+        if level.level_wrapper.version < 2826:
+            global OLD_SPAWNER_FORMAT
+            OLD_SPAWNER_FORMAT = True
+            print("Using old spawner format.")
         scan_world(level)
     except Exception as e:
         print("Error loading world:", e)
