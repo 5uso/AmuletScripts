@@ -2,10 +2,12 @@ import amulet, sys, re, os
 import amulet_nbt as n
 from tqdm import tqdm
 
-OLD_SPAWNER_FORMAT = False
+OLD_SPAWNER_FORMAT = False # If this is false, uses 1.18+ nbt paths for spawners
 
 REG = re.compile(r'"text" *: *"((?:[^"\\]|\\\\"|\\.)*)"')
 REG2 = re.compile(r'\\"text\\" *: *\\"((?:[^"\\]|\\\\.)*)\\"')
+REG3 = re.compile(r'"contents":"((?:[^"\\]|\\\\"|\\.)*)"')
+REG4 = re.compile(r'bossbar set ([^ ]+) name "(.*)"')
 CONTAINERS = ["chest", "furnace", "shulker_box", "barrel", "smoker", "blast_furnace", "trapped_chest", "hopper", "dispenser", "dropper", "brewing_stand", "campfire"]
 
 rev_lang = dict()
@@ -35,13 +37,28 @@ def get_key():
     key_cnt += 1
     return f"{key}.{key_cnt}"
 
-def match_text(match, escaped = False):
-    plain = match.group(1)
+def get_plain_from_match(match, escaped = False, ord = 1):
+    plain = match.group(ord)
     if escaped: plain = re.sub(pattern = r'\\\\', string = plain, repl = r'\\')
     plain = re.sub(pattern = r'\\\\([^\\])', string = plain, repl = r'\\\1')
     plain = re.sub(pattern = r"\\'", string = plain, repl = r"'")
+    return plain
+
+def match_text(match, escaped = False):
+    plain = get_plain_from_match(match, escaped)
     if plain not in rev_lang: rev_lang[plain] = get_key()
     return f'\\"translate\\":\\"{rev_lang[plain]}\\"' if escaped else f'"translate":"{rev_lang[plain]}"'
+
+def match_contents(match):
+    plain = get_plain_from_match(match)
+    if plain not in rev_lang: rev_lang[plain] = get_key()
+    return f'"contents":{{"translate":"{rev_lang[plain]}"}}'
+
+def match_bossbar(match):
+    plain = get_plain_from_match(match, ord = 2)
+    if plain not in rev_lang: rev_lang[plain] = get_key()
+    name = match.group(1)
+    return f'bossbar set {name} name {{"translate":"{rev_lang[plain]}"}}'
 
 def match_text_escaped(match):
     return match_text(match, True)
@@ -302,6 +319,8 @@ def scan_file(path, start):
         with open(path, 'r', encoding = "utf-8") as f:
             txt = REG.sub(string = f.read(), repl = match_text)
             txt = REG2.sub(string = txt, repl = match_text_escaped)
+            txt = REG3.sub(string = txt, repl = match_contents)
+            txt = REG4.sub(string = txt, repl = match_bossbar)
         with open(path, 'w', encoding = "utf-8") as f:
             f.write(txt)
     except Exception as e:
