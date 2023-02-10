@@ -8,6 +8,7 @@ REG = re.compile(r'"text" *: *"((?:[^"\\]|\\\\"|\\.)*)"')
 REG2 = re.compile(r'\\"text\\" *: *\\"((?:[^"\\]|\\\\.)*)\\"')
 REG3 = re.compile(r'"contents":"((?:[^"\\]|\\\\"|\\.)*)"')
 REG4 = re.compile(r'bossbar set ([^ ]+) name "(.*)"')
+REG5 = re.compile(r'bossbar add ([^ ]+) "(.*)"')
 CONTAINERS = ["chest", "furnace", "shulker_box", "barrel", "smoker", "blast_furnace", "trapped_chest", "hopper", "dispenser", "dropper", "brewing_stand", "campfire"]
 
 rev_lang = dict()
@@ -59,6 +60,12 @@ def match_bossbar(match):
     if plain not in rev_lang: rev_lang[plain] = get_key()
     name = match.group(1)
     return f'bossbar set {name} name {{"translate":"{rev_lang[plain]}"}}'
+
+def match_bossbar2(match):
+    plain = get_plain_from_match(match, ord = 2)
+    if plain not in rev_lang: rev_lang[plain] = get_key()
+    name = match.group(1)
+    return f'bossbar add {name} {{"translate":"{rev_lang[plain]}"}}'
 
 def match_text_escaped(match):
     return match_text(match, True)
@@ -321,6 +328,7 @@ def scan_file(path, start):
             txt = REG2.sub(string = txt, repl = match_text_escaped)
             txt = REG3.sub(string = txt, repl = match_contents)
             txt = REG4.sub(string = txt, repl = match_bossbar)
+            txt = REG5.sub(string = txt, repl = match_bossbar2)
         with open(path, 'w', encoding = "utf-8") as f:
             f.write(txt)
     except Exception as e:
