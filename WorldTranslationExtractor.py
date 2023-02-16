@@ -324,13 +324,16 @@ def scan_file(path, start):
         k = k[:-11] if k.endswith(".mcfunction") else k[:-5]
         set_key(k)
         with open(path, 'r', encoding = "utf-8") as f:
-            txt = REG.sub(string = f.read(), repl = match_text)
-            txt = REG2.sub(string = txt, repl = match_text_escaped)
-            txt = REG3.sub(string = txt, repl = match_contents)
-            txt = REG4.sub(string = txt, repl = match_bossbar)
-            txt = REG5.sub(string = txt, repl = match_bossbar2)
+            l = f.readlines()
+            for i in range(len(l)):
+                if l[i].startswith('#'): continue
+                txt = REG.sub(string = l[i], repl = match_text)
+                txt = REG2.sub(string = txt, repl = match_text_escaped)
+                txt = REG3.sub(string = txt, repl = match_contents)
+                txt = REG4.sub(string = txt, repl = match_bossbar)
+                l[i] = REG5.sub(string = txt, repl = match_bossbar2)
         with open(path, 'w', encoding = "utf-8") as f:
-            f.write(txt)
+            f.writelines(l)
     except Exception as e:
         print("Can't replace datapack file '" + path + "':", e)
 
