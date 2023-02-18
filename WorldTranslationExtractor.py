@@ -190,6 +190,10 @@ def handle_entity(entity, type):
     except KeyError: pass
 
     try:
+        changed |= handle_item(entity['Item'])
+    except KeyError: pass
+
+    try:
         for i in entity['Inventory']: changed |= handle_item(i)
     except KeyError: pass
 
